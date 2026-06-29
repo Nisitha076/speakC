@@ -1,0 +1,28 @@
+include <stdio>
+
+define function printArray returns void:
+    declare arr as array of 5 int
+    set arr[0] to 10
+    set arr[1] to 20
+    set arr[2] to 30
+    set arr[3] to 40
+    set arr[4] to 50
+
+    for set i to 0 as int, i < 5, increment i:
+        printf("arr[%d] = %d\n", i, arr[i])
+
+define function main returns int:
+    declare ptr as pointer to constant char
+    set ptr to "Hello SpeakC!"
+    printf("%s\n", ptr)
+
+    declare sz as int
+    set sz to size of array of 10 float
+    printf("Size of array of 10 float: %d\n", sz)
+
+    declare doubleVal as double
+    set doubleVal to cast 3.14159 to double
+    printf("doubleVal: %f\n", doubleVal)
+
+    printArray()
+    return 0

@@ -1,0 +1,13 @@
+# Build output and binaries
+build/
+
+# Roadmap documentation (kept local)
+docs/roadmap/
+
+# Generated test artifacts
+tests/samples/*.c
+!tests/samples/*.speakc
+tests/samples/0*
+tests/samples/hello
+tests/samples/control
+tests/samples/types

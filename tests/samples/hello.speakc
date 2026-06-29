@@ -1,0 +1,27 @@
+include <stdio>
+
+define Point as structure:
+    declare x as int
+    declare y as int
+
+define function updatePoint returns void:
+    declare p as pointer to Point
+    set x of value at p to 100
+    add 10 to y of value at p
+    decrement x of value at p
+
+define function main returns int:
+    declare pt as Point
+    set x of pt to 10
+    set y of pt to 20
+    
+    // Check coordinates
+    if x of pt > 5:
+        printf("x is greater than 5\n")
+    else:
+        printf("x is small\n")
+        
+    while y of pt < 30:
+        increment y of pt
+        
+    return 0

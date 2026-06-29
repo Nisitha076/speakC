@@ -1,0 +1,33 @@
+include <stdio>
+
+define function checkNumber returns void:
+    declare x as int
+    set x to 2
+
+    switch on x:
+        case 1:
+        printf("It is one\n")
+        break
+        case 2:
+        printf("It is two\n")
+        break
+        default:
+        printf("It is something else\n")
+        break
+
+define function main returns int:
+    declare y as int
+    set y to 0
+
+    // Test do-while loop
+    do:
+        printf("y is %d\n", y)
+        increment y
+    while y < 5
+
+    // Test for loop
+    for set i to 0 as int, i < 3, increment i:
+        printf("i is %d\n", i)
+
+    checkNumber()
+    return 0
