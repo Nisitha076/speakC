@@ -38,7 +38,7 @@ static int cmd_build(const char *input_path) {
 
     // 4. Parse
     Parser parser;
-    parser_init(&parser, &tokens, &arena);
+    parser_init(&parser, &tokens, &arena, source, input_path);
     ASTNode *ast = parser_parse(&parser);
 
     // 5. Emit
@@ -129,7 +129,7 @@ static int cmd_ast(const char *input_path) {
     lexer_tokenize(&lexer, &tokens);
 
     Parser parser;
-    parser_init(&parser, &tokens, &arena);
+    parser_init(&parser, &tokens, &arena, source, input_path);
     ASTNode *ast = parser_parse(&parser);
 
     ast_print(ast, 0);

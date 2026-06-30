@@ -10,9 +10,11 @@ typedef struct {
     Vec *tokens; // Token list from the lexer
     int pos; // Current posistion in token list
     Arena *arena; // For allocating AST nodes
+    const char *source; // Source code string
+    const char *filename; // Source file path
 } Parser;
 
-void parser_init(Parser *p, Vec *tokens, Arena *arena);
+void parser_init(Parser *p, Vec *tokens, Arena *arena, const char *source, const char *filename);
 ASTNode *parser_parse(Parser *p); // Returns the root AST node 
 
 #endif

@@ -1,4 +1,5 @@
 #include "../include/parser.h"
+#include "../include/util/error.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,10 +38,12 @@ static ASTNode *parse_define(Parser *p);
 static ASTNode *parse_top_level(Parser *p);
 
 // Initialize the parser with the token list and arena allocator
-void parser_init(Parser *p, Vec *tokens, Arena *arena) {
+void parser_init(Parser *p, Vec *tokens, Arena *arena, const char *source, const char *filename) {
     p->tokens = tokens;
     p->pos = 0;
     p->arena = arena;
+    p->source = source;
+    p->filename = filename;
 }
 
 // Get the current token without advancing
@@ -77,11 +80,12 @@ static Token *expect(Parser *p, TokenType type) {
         return advance_token(p);
     }
     Token *tok = current(p);
-    fprintf(stderr, "Error at line %d, col %d: expected %s, got %s (\"%s\")\n",
-            tok->line, tok->column,
-            token_type_name(type),
-            token_type_name(tok->type),
-            tok->value);
+    char msg[256];
+    snprintf(msg, sizeof(msg), "expected %s, got %s (\"%s\")",
+             token_type_name(type),
+             token_type_name(tok->type),
+             tok->value);
+    report_error(p->filename, p->source, tok->line, tok->column, msg);
     exit(1);
 }
 
@@ -146,7 +150,8 @@ static ASTNode *parse_type(Parser *p) {
         return ast_new(p->arena, NODE_TYPE, tok->value, line);
     }
 
-    fprintf(stderr, "Error at line %d: expected a type\n", line);
+    Token *tok = current(p);
+    report_error(p->filename, p->source, tok->line, tok->column, "expected a type");
     exit(1);
 }
 
@@ -239,8 +244,11 @@ static ASTNode *parse_primary(Parser *p) {
         return expr;
     }
 
-    fprintf(stderr, "Error at line %d: unexpected token %s (\"%s\")\n",
-            line, token_type_name(current(p)->type), current(p)->value);
+    Token *tok = current(p);
+    char msg[256];
+    snprintf(msg, sizeof(msg), "unexpected token %s (\"%s\")",
+             token_type_name(tok->type), tok->value);
+    report_error(p->filename, p->source, tok->line, tok->column, msg);
     exit(1);
 }
 
@@ -719,7 +727,8 @@ static ASTNode *parse_compound_assign_statement(Parser *p) {
         ast_add_child(p->arena, node, target);
         ast_add_child(p->arena, node, val);
     } else {
-        fprintf(stderr, "Error at line %d: expected compound assignment\n", line);
+        Token *tok = current(p);
+        report_error(p->filename, p->source, tok->line, tok->column, "expected compound assignment");
         exit(1);
     }
     return node;
@@ -837,8 +846,11 @@ static ASTNode *parse_top_level(Parser *p) {
     if (check(p, TOKEN_DECLARE))
         return parse_declare_statement(p);  
 
-    fprintf(stderr, "Error at line %d: unexpected top-level token %s\n",
-            current(p)->line, token_type_name(current(p)->type));
+    Token *tok = current(p);
+    char msg[256];
+    snprintf(msg, sizeof(msg), "unexpected top-level token %s (\"%s\")",
+             token_type_name(tok->type), tok->value);
+    report_error(p->filename, p->source, tok->line, tok->column, msg);
     exit(1);
 }
 
