@@ -130,9 +130,28 @@ typedef enum {
     TOKEN_DEDENT,        // Indentation decreased
     TOKEN_NEWLINE,       // End of a line
 
+    // C17-specific operator tokens (used by backward lexer only)
+    TOKEN_PLUS_PLUS,     // ++
+    TOKEN_MINUS_MINUS,   // --
+
+    // C17 keyword tokens (used by backward lexer)
+    TOKEN_C_STRUCT,      // "struct"
+    TOKEN_C_CONST,       // "const"
+    TOKEN_C_SIZEOF,      // "sizeof"
+    TOKEN_C_NULL,        // "NULL"
+    TOKEN_C_TYPEDEF,     // "typedef"
+    TOKEN_C_ENUM,        // "enum"
+    TOKEN_C_UNION,       // "union"
+    TOKEN_C_STATIC,      // "static"
+    TOKEN_C_EXTERN,      // "extern"
+    TOKEN_C_VOLATILE,    // "volatile"
+    TOKEN_C_REGISTER,    // "register"
+    TOKEN_C_INLINE,      // "inline"
+
     // Special
     TOKEN_EOF,           // End of file
     TOKEN_ERROR,         // Lexer error
+
 } TokenType;
 
 typedef struct {
