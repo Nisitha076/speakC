@@ -1,6 +1,5 @@
 #include "../../include/util/error.h"
 #include <stdio.h>
-#include <string.h>
 
 void report_error(const char *filename, const char *source, int line, int column, const char *message) {
     // Print the error header in bold red

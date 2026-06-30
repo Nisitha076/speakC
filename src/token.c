@@ -130,6 +130,24 @@ const char *token_type_name(TokenType type) {
         case TOKEN_DEDENT:        return "TOKEN_DEDENT";
         case TOKEN_NEWLINE:       return "TOKEN_NEWLINE";
 
+        // C17-specific operator tokens
+        case TOKEN_PLUS_PLUS:     return "TOKEN_PLUS_PLUS";
+        case TOKEN_MINUS_MINUS:   return "TOKEN_MINUS_MINUS";
+
+        // C17 keyword tokens
+        case TOKEN_C_STRUCT:      return "TOKEN_C_STRUCT";
+        case TOKEN_C_CONST:       return "TOKEN_C_CONST";
+        case TOKEN_C_SIZEOF:      return "TOKEN_C_SIZEOF";
+        case TOKEN_C_NULL:        return "TOKEN_C_NULL";
+        case TOKEN_C_TYPEDEF:     return "TOKEN_C_TYPEDEF";
+        case TOKEN_C_ENUM:        return "TOKEN_C_ENUM";
+        case TOKEN_C_UNION:       return "TOKEN_C_UNION";
+        case TOKEN_C_STATIC:      return "TOKEN_C_STATIC";
+        case TOKEN_C_EXTERN:      return "TOKEN_C_EXTERN";
+        case TOKEN_C_VOLATILE:    return "TOKEN_C_VOLATILE";
+        case TOKEN_C_REGISTER:    return "TOKEN_C_REGISTER";
+        case TOKEN_C_INLINE:      return "TOKEN_C_INLINE";
+
         // Special
         case TOKEN_EOF:           return "TOKEN_EOF";
         case TOKEN_ERROR:         return "TOKEN_ERROR";
