@@ -2,6 +2,7 @@
 #include "../include/util/vec.h"
 #include "../include/util/arena.h"
 #include "../include/lexer.h"
+#include "../include/c_lexer.h"
 #include "../include/token.h"
 #include "../include/parser.h"
 #include "../include/ast.h"
@@ -16,6 +17,7 @@ static void print_usage(void) {
     printf("Commands:\n");
     printf("  build    Transpile SpeakC file to C17\n");
     printf("  tokens   Print tokens of SpeakC file\n");
+    printf("  ctokens  Print tokens of C17 file\n");
     printf("  ast      Print AST of SpeakC file\n");
     printf("  reverse  Reverse transpile C to SpeakC\n");
 }
@@ -116,6 +118,35 @@ static int cmd_tokens(const char *input_path) {
     return 0;
 }
 
+static int cmd_ctokens(const char *input_path) {
+    char *source = read_file(input_path);
+    if (!source) return 1;
+
+    Arena arena;
+    arena_init(&arena);
+    CLexer lexer;
+    Vec tokens;
+    vec_init(&tokens);
+    c_lexer_init(&lexer, source, &arena);
+    c_lexer_tokenize(&lexer, &tokens);
+
+    printf("--- C17 Tokens from %s ---\n", input_path);
+    for (int i = 0; i < tokens.count; i++) {
+        Token *tok = (Token *)vec_get(&tokens, i);
+        printf("%-20s %-15s  %d:%d\n",
+               token_type_name(tok->type),
+               tok->value,
+               tok->line,
+               tok->column);
+    }
+    printf("Total tokens: %d\n", tokens.count);
+
+    vec_free(&tokens);
+    arena_free(&arena);
+    free(source);
+    return 0;
+}
+
 static int cmd_ast(const char *input_path) {
     char *source = read_file(input_path);
     if (!source) return 1;
@@ -161,6 +192,7 @@ int main(int argc, char *argv[]) {
 
     if (strcmp(command, "build") == 0)   return cmd_build(filename);
     if (strcmp(command, "tokens") == 0)  return cmd_tokens(filename);
+    if (strcmp(command, "ctokens") == 0) return cmd_ctokens(filename);
     if (strcmp(command, "ast") == 0)     return cmd_ast(filename);
     if (strcmp(command, "reverse") == 0) {
         printf("TODO: Reverse transpilation (Phase 7)\n");
