@@ -3,6 +3,7 @@
 #include "../include/util/arena.h"
 #include "../include/lexer.h"
 #include "../include/c_lexer.h"
+#include "../include/c_parser.h"
 #include "../include/token.h"
 #include "../include/parser.h"
 #include "../include/ast.h"
@@ -19,6 +20,7 @@ static void print_usage(void) {
     printf("  tokens   Print tokens of SpeakC file\n");
     printf("  ctokens  Print tokens of C17 file\n");
     printf("  ast      Print AST of SpeakC file\n");
+    printf("  cast     Print AST of C17 file\n");
     printf("  reverse  Reverse transpile C to SpeakC\n");
 }
 
@@ -171,6 +173,32 @@ static int cmd_ast(const char *input_path) {
     return 0;
 }
 
+static int cmd_cast(const char *input_path) {
+    char *source = read_file(input_path);
+    if (!source) return 1;
+
+    Arena arena;
+    arena_init(&arena);
+    CLexer lexer;
+    Vec tokens;
+    vec_init(&tokens);
+    c_lexer_init(&lexer, source, &arena);
+    c_lexer_tokenize(&lexer, &tokens);
+
+    CParser parser;
+    c_parser_init(&parser, &tokens, &arena, input_path);
+    ASTNode *ast = c_parser_parse(&parser);
+
+    printf("--- C17 AST from %s ---\n", input_path);
+    ast_print(ast, 0);
+
+    vec_free(&tokens);
+    arena_free(&arena);
+    free(source);
+    return 0;
+}
+
+
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         print_usage();
@@ -194,6 +222,7 @@ int main(int argc, char *argv[]) {
     if (strcmp(command, "tokens") == 0)  return cmd_tokens(filename);
     if (strcmp(command, "ctokens") == 0) return cmd_ctokens(filename);
     if (strcmp(command, "ast") == 0)     return cmd_ast(filename);
+    if (strcmp(command, "cast") == 0)    return cmd_cast(filename);
     if (strcmp(command, "reverse") == 0) {
         printf("TODO: Reverse transpilation (Phase 7)\n");
         return 0;
