@@ -8,6 +8,7 @@
 #include "../include/parser.h"
 #include "../include/ast.h"
 #include "../include/emitter.h"
+#include "../include/speakc_emitter.h"
 #include "../include/util/file_io.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -198,6 +199,68 @@ static int cmd_cast(const char *input_path) {
     return 0;
 }
 
+static int cmd_reverse(const char *input_path) {
+    char *source = read_file(input_path);
+    if (!source) return 1;
+
+    Arena arena;
+    arena_init(&arena);
+
+    // 1. Lex the C17 file
+    CLexer lexer;
+    Vec tokens;
+    vec_init(&tokens);
+    c_lexer_init(&lexer, source, &arena);
+    c_lexer_tokenize(&lexer, &tokens);
+
+    // 2. Parse the C17 tokens into an AST
+    CParser parser;
+    c_parser_init(&parser, &tokens, &arena, input_path);
+    ASTNode *ast = c_parser_parse(&parser);
+
+    // 3. Emit SpeakC from the AST
+    SpeakCEmitter emitter;
+    speakc_emitter_init(&emitter);
+    speakc_emitter_emit(&emitter, ast);
+    char *output = speakc_emitter_get_output(&emitter);
+
+    // 4. Write output file (change .c to .speakc)
+    char output_path[256];
+    const char *dot = strrchr(input_path, '.');
+    size_t stem_len = dot ? (size_t)(dot - input_path) : strlen(input_path);
+    int written = snprintf(output_path, sizeof(output_path), "%.*s.speakc", (int)stem_len, input_path);
+
+    if (written < 0 || (size_t)written >= sizeof(output_path)) {
+        fprintf(stderr, "Error: output file path is too long\n");
+        free(output);
+        speakc_emitter_free(&emitter);
+        vec_free(&tokens);
+        arena_free(&arena);
+        free(source);
+        return 1;
+    }
+
+    if (write_file(output_path, output) != 0) {
+        fprintf(stderr, "Failed to write output\n");
+        free(output);
+        speakc_emitter_free(&emitter);
+        vec_free(&tokens);
+        arena_free(&arena);
+        free(source);
+        return 1;
+    }
+
+    printf("✓ Reversed: %s → %s\n", input_path, output_path);
+
+    // 5. Cleanup
+    free(output);
+    speakc_emitter_free(&emitter);
+    vec_free(&tokens);
+    arena_free(&arena);
+    free(source);
+    return 0;
+}
+
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -223,10 +286,7 @@ int main(int argc, char *argv[]) {
     if (strcmp(command, "ctokens") == 0) return cmd_ctokens(filename);
     if (strcmp(command, "ast") == 0)     return cmd_ast(filename);
     if (strcmp(command, "cast") == 0)    return cmd_cast(filename);
-    if (strcmp(command, "reverse") == 0) {
-        printf("TODO: Reverse transpilation (Phase 7)\n");
-        return 0;
-    }
+    if (strcmp(command, "reverse") == 0) return cmd_reverse(filename);
 
     printf("Unknown command: %s\n", command);
     print_usage();

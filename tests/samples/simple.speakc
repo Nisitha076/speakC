@@ -1,0 +1,7 @@
+include <stdio>
+define function main returns int:
+    set x to 42 as int
+    if x > 10:
+        printf("big\n")
+    return 0
+
