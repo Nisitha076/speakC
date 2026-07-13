@@ -1,0 +1,15 @@
+include <stdio>
+define function main returns int:
+    set x to 10 as int
+    if x > 5:
+        printf("big\n")
+    else if x > 0:
+        printf("small\n")
+    else:
+        printf("zero or negative\n")
+    while x > 0:
+        decrement x
+    for set i to 0 as int, i < 5, increment i:
+        printf("%d\n", i)
+    return 0
+

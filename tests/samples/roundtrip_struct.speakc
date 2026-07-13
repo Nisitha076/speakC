@@ -1,0 +1,12 @@
+include <stdio>
+define Point as structure:
+    declare x as int
+    declare y as int
+
+define function main returns int:
+    declare pt as Point
+    set x of pt to 10
+    set y of pt to 20
+    printf("Point: (%d, %d)\n", x of pt, y of pt)
+    return 0
+

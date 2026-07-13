@@ -1,0 +1,9 @@
+include <stdio>
+include <stdlib>
+define function main returns int:
+    set p to malloc(size of int) as pointer to int
+    set value at p to 42
+    printf("Value: %d\n", value at p)
+    free(p)
+    return 0
+

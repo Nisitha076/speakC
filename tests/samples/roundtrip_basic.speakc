@@ -1,0 +1,8 @@
+include <stdio>
+define function main returns int:
+    set x to 42 as int
+    set name to "Alice" as array of ] char
+    set pi to 3.14 as float
+    printf("x = %d, name = %s, pi = %f\n", x, name, pi)
+    return 0
+
